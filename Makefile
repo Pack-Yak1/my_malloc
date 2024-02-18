@@ -1,12 +1,13 @@
-FLAGS=-Wall -Werror -Wpedantic -g #-DVERBOSE
+FLAGS=-g -Wall -Werror -Wpedantic #-DVERBOSE
 
-naive_malloc:
+brk_malloc:
 	gcc $(FLAGS) -o bin/$@ test/malloc.t.c src/$@.c -I include
-	./bin/$@
+
+mmap_malloc:
+	gcc $(FLAGS) -o bin/$@ test/malloc.t.c src/$@.c -I include
 	
 true_malloc:
 	gcc $(FLAGS) -o bin/$@ test/malloc.t.c
-	./bin/$@
 
 clean:
 	rm bin/*

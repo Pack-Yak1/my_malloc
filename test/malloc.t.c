@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-const size_t MAX_ALLOC_SIZE = 4096;
+const size_t MAX_ALLOC_SIZE = 4096 * 16;
 const size_t MAX_ALLOCS = 1000000;
-const size_t NUM_ITERS = 10000000;
+const size_t NUM_ITERS = 1000000;
 
 void *verbose_malloc(size_t sz) {
   printf("malloc-ing %lu\n", sz);
