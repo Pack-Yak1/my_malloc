@@ -25,14 +25,14 @@ Truncate the chunk list, and traverse the free-list, filtering any chunks which 
 
 ## Testing/benchmarking
 
-Tested using `/bin/time -v`
+Tested using `/bin/time -v` on binaries compiled with `-O3`
 
 1. Random malloc/free calls: Make `NUM_ITERS` calls to either `malloc` with random sizes or `free` on any previously allocated pointers, with at most `MAX_ALLOCS` pointers allocated at any one time.
 
-- For `NUM_ITERS` = 1 million and `MAX_ALLOCS` = 1 million and max alloc size = 64 KB:
+- For `NUM_ITERS` = 10 million and `MAX_ALLOCS` = 1 million and max alloc size = 64 KB:
 
 | Implementation | real time (s) | user time (s) | sys time (s) | Maxi resident set size (KB) |
 | -------------- | ------------- | ------------- | ------------ | --------------------------- |
-| malloc.h       | 0.59          | 0.57          | 0.00         | 62496                       |
-| brk_malloc     | 0.51          | 0.50          | 0.00         | 15920                       |
-| mmap_malloc    | 0.51          | 0.50          | 0.00         | 19768                       |
+| malloc.h       | 3.75          | 3.71          | 0.04         | 183976                      |
+| brk_malloc     | 2.89          | 2.89          | 0.00         | 30680                       |
+| mmap_malloc    | 2.98          | 2.97          | 0.00         | 38280                       |

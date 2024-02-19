@@ -1,4 +1,4 @@
-FLAGS=-g -Wall -Werror -Wpedantic #-DVERBOSE
+FLAGS=-g -Wall -Werror -Wpedantic -Wno-unused-result -O3 #-DVERBOSE
 
 brk_malloc:
 	gcc $(FLAGS) -o bin/$@ test/malloc.t.c src/$@.c -I include
