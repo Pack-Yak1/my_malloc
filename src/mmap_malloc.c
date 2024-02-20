@@ -16,9 +16,6 @@ struct malloc_chunk {
   // The size of memory the user can use from this chunk. Resides right after
   // this struct in memory
   size_t chunk_size;
-  // Previous chunk in the chunk list this chunk belongs to
-  // Next chunk in the chunk list this chunk belongs to
-  malloc_chunk_t *next;
 
   // Previous free chunk in the free list. NULL if no prev free chunk or if this
   // chunk is not free
@@ -255,7 +252,6 @@ static malloc_chunk_t *create_malloc_chunk(size_t size_requested) {
 
   // Initialize the new chunk
   new_chunk->chunk_size = size_requested;
-  new_chunk->next = NULL;
   new_chunk->prev_free = free_tail;
   new_chunk->next_free = NULL;
   new_chunk->region = regions_end;

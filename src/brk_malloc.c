@@ -5,7 +5,6 @@
 // heap memory instead of storing it in the chunk itself
 typedef struct malloc_chunk {
   size_t chunk_size;
-  struct malloc_chunk *next;
   struct malloc_chunk *prev;
   struct malloc_chunk *next_free;
   bool occupied;
@@ -62,16 +61,12 @@ static void *create_new_chunk(size_t sz) {
 
   metadata_ptr->chunk_size = sz;
   metadata_ptr->prev = chunks_tail;
-  metadata_ptr->next = NULL;
   metadata_ptr->next_free = NULL;
   metadata_ptr->occupied = true;
 
   if (chunks_head == NULL) {
     // First chunk
     chunks_head = metadata_ptr;
-  } else {
-    // Make old tail point to this chunk
-    chunks_tail->next = metadata_ptr;
   }
 
   // Either way, this will be the new tail
@@ -169,7 +164,6 @@ void free(void *addr) {
     // earliest address we can free
     malloc_chunk_t *new_program_break = chunk_to_free;
     chunks_tail = chunk_to_free->prev;
-    chunks_tail->next = NULL;
     free_list_delete_gte(new_program_break);
     brk(new_program_break);
   }
