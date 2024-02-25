@@ -14,15 +14,15 @@
 static size_t num_arenas = 0;
 static size_t arenas_capacity = 0;
 static arena_t *arenas_head = NULL;
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
-void init_arena_array() {
+static void init_arena_array() {
   arenas_head = sbrk(sizeof(arena_t) * MIN_ARENAS);
   arenas_capacity = MIN_ARENAS;
 }
 
 // `addr` is where the user would like a new arena to be created.
-void create_arena(arena_t *addr, pid_t thread_id) {
+static void create_arena(arena_t *addr, pid_t thread_id) {
   // First, ensure that addr is safe to write to.
   if (UNLIKELY(num_arenas >= arenas_capacity)) {
     // Double capacity
@@ -76,16 +76,12 @@ static arena_t *binary_search(arena_t *start, arena_t *end, pid_t thread_id) {
   return binary_search_helper(start, end, thread_id);
 }
 
-arena_t get_arena(pid_t thread_id) {
-  pthread_mutex_lock(&lock);
-
+static arena_t *get_arena_pointer(pid_t thread_id) {
   if (UNLIKELY(arenas_head == NULL)) {
     // No arenas exist yet
     init_arena_array();
     create_arena(arenas_head, thread_id);
-    arena_t ret = *arenas_head;
-    pthread_mutex_unlock(&lock);
-    return ret;
+    return arenas_head;
   }
 
   arena_t *last_arena = arenas_head + num_arenas - 1;
@@ -97,9 +93,29 @@ arena_t get_arena(pid_t thread_id) {
     create_arena(first_gte, thread_id);
   }
 
-  arena_t ret = *first_gte;
+  return first_gte;
+}
+
+arena_t get_arena(pid_t thread_id) {
+  pthread_mutex_lock(&lock);
+
+  arena_t ret = *get_arena_pointer(thread_id);
   pthread_mutex_unlock(&lock);
   return ret;
+}
+
+int set_arena(pid_t thread_id, arena_t *new_value) {
+  pthread_mutex_lock(&lock);
+
+  arena_t *dest = get_arena_pointer(thread_id);
+  if (UNLIKELY(thread_id != new_value->thread_id)) {
+    return -1;
+  }
+
+  memcpy(dest, new_value, sizeof(arena_t));
+
+  pthread_mutex_unlock(&lock);
+  return 0;
 }
 
 void delete_arena(pid_t thread_id) {}

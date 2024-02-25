@@ -7,9 +7,13 @@
 
 #include "arena_types.h"
 
-// Returns the arena for the thread with id `thread_id`, creating an arena if no
-// such arena exists
+// Returns a copy of the arena for the thread with id `thread_id`, creating an
+// arena if no such arena exists
 arena_t get_arena(pid_t thread_id);
+
+// Update the arena for the thread with id `thread_id` to the contents of
+// `new_value`. Returns 0 on success
+int set_arena(pid_t thread_id, arena_t *new_value);
 
 // Deletes the arena owned by the thread with id `thread_id`, if any. Does
 // nothing if no such arena exists
